@@ -1,14 +1,25 @@
 # Многомодульный maven. Многопоточность. XML. Веб сервисы. Удаленное взаимодействие
 ## <a href="http://javawebinar.ru/masterjava">Регистрация</a>
-## [Программа проекта](#Программа-проекта)
+## [Программа проекта](#Программа-проекта-1)
+### [Изменения проекта (Release Notes)](ReleaseNotes.md)
 
 ### _Разработка полнофункционального многомодульного Maven проекта_
-- веб приложение (Tomcat, Thymleaf, jQuery)
-- модуль экспорта из XML (JAXB, StAX)
-- многопоточный почтовый сервис (JavaMail, java.util.concurrent.*)
-- связь модулей через веб-сервисы (SOAP, JAX-WS) и по REST (JAX-RS)
-- сохранение данных в RMDBS (postgresql)
-- библиотеки Guava, StreamEx, Lombook, Typesafe config, jDBI
+#### состоящего из 3-х веб приложений:
+
+![image](https://cloud.githubusercontent.com/assets/13649199/23876457/ab01ff0a-084e-11e7-964f-49c90579fac9.png)
+
+- **приложение импорта** из XML (JAXB, StAX, XPath, XSLT)
+- **многопоточного почтового веб-сервиса** (JavaMail, java.util.concurrent, JAX-WS, MTOM, хендлеры авторизации, логирования и статистики) 
+- **веб приложения отправки почты с вложениями**
+  - по SOAP (JAX-WS, MTOM)
+  - по JAX-RS (Jersey)
+  - по JMS ([ActiveMQ](http://activemq.apache.org/))
+  - через [AKKA](http://akka.io/)
+  - через [Redis](https://redis.io/)
+- сохранение данных в PostgreSQL используя [jDBI](http://jdbi.org/)
+- миграция базы [LiquiBase](http://www.liquibase.org/)
+- использование в проекте [Guava](https://github.com/google/guava/wiki), [Thymleaf](http://www.thymeleaf.org/), [Lombook](https://projectlombok.org/), [StreamEx](https://github.com/amaembo/streamex), 
+[Typesafe Config](https://github.com/typesafehub/config), [Java Microbenchmark JMH](http://openjdk.java.net/projects/code-tools/jmh)
 
 ### Требование к участникам
 Опыт программирования на Java. Базовые знания Maven.
@@ -17,8 +28,6 @@
 -  <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">JDK8</a>
 -  <a href="http://git-scm.com/downloads">Git</a>
 -  <a href="http://www.jetbrains.com/idea/download/index.html">IntelliJ IDEA</a>
-
-> Выбирать Ultimate, 30 days trial (работа с JavaScript, Tomcat, JSP). Персональный ключ к Ultimate (на 6 месяцев) выдается на первом занятии.
 
 # Первое занятие: многопоточность.
 
@@ -64,7 +73,8 @@
 ## ![video](https://cloud.githubusercontent.com/assets/13649199/13672715/06dbc6ce-e6e7-11e5-81a9-04fbddb9e488.png) 4. <a href="https://www.youtube.com/watch?v=AEhIh2qd-FM">Реализация многопоточной отправки писем. Execution Framework</a>
 > правка к видео: `22:   completionService.submit(..)`
 
-### ![](https://cloud.githubusercontent.com/assets/13649199/13672935/ef09ec1e-e6e7-11e5-9f79-d1641c05cbe6.png)  Все изменения в проекте будут делаться на основе патчей: скачайте [1_1_MailService.patch](https://drive.google.com/open?id=0B9Ye2auQ_NsFTE5ZV3pzWElxTWM), положите его в проект, правой мышкой на нем сделайте Apply Patch ...
+### ![](https://cloud.githubusercontent.com/assets/13649199/13672935/ef09ec1e-e6e7-11e5-9f79-d1641c05cbe6.png)  Все изменения в проекте будут делаться на основе патчей
+#### Скачайте [1_1_MailService.patch](https://drive.google.com/open?id=0B9Ye2auQ_NsFTE5ZV3pzWElxTWM), положите его в проект, правой мышкой на нем сделайте Apply Patch ...
 
 ----------------------------
 
@@ -87,6 +97,17 @@
 - Количество дочерних потоков ограничено `MainMatrix.THREAD_NUMBER`.
 - Добиться того, чтобы на матрице 1000*1000 многопоточная реализация была быстрее однопоточной
 
+-----
+## ![error](https://cloud.githubusercontent.com/assets/13649199/13672935/ef09ec1e-e6e7-11e5-9f79-d1641c05cbe6.png) Подсказки по HW1
+- не делайте 1000 000 тасок, лучше их сделать крупнее
+- у меня разница между 4 и 1000 тасками по времени незаметна, поэтому делайте просто и не делайте сложно
+- наконец: можно не считать значение элемента результирующей матрицы C за раз, а накапливать (`concurrentMultiply3`). Мои результаты:
+```
+Benchmark                             (matrixSize)  Mode  Cnt    Score    Error  Units
+MatrixBenchmark.singleThreadMultiplyOpt       1000    ss  100  837,867 ± 25,530  ms/op
+MatrixBenchmark.concurrentMultiply2           1000    ss  100  394,294 ± 21,657  ms/op
+MatrixBenchmark.concurrentMultiply3           1000    ss  100  186,827 ± 11,882  ms/op
+```
 -----
 # Программа проекта
 
@@ -114,7 +135,7 @@
 - Maven. Поиск и разрешение конфликтов зависимостей
 - Логирование
 - Выбор lightweight JDBC helper library. <a href="http://jdbi.org/">JDBI</a>
-- Tomcat Class Loader. Memory Leeks
+- Tomcat Class Loader. Memory Leaks
 
 ## Занятие 5
 - Разбор ДЗ (реализуем модули persist, export и web)
@@ -148,14 +169,14 @@
 
 ## Занятие 10
 - Разбор ДЗ (реализация авторизации и статистики)
+- Авторизация в контейнере Tomcat
 - JavaEE
-  - CDI
-  - JAX-RS. Интеграция с Jersey
-  - EJB
-  - JMS
+- JAX-RS. Интеграция с Jersey
+- JMS. Интеграция с [ActiveMQ](http://activemq.apache.org/)
  
-## Занятие 11 (предварительно)
-- Асинхронные сервлеты 3.x в Tomcat
-- Maven Groovy cкрптинг (groovy-maven-plugin)
-- AKKA
-- Redis
+## Занятие 11
+- Отправка почты с вложениями
+  - по JAX-RS
+  - по JMS
+  - через AKKA (предварительно)
+  - через Redis (предварительно)
