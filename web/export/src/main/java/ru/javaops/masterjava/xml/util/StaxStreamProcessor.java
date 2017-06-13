@@ -58,7 +58,8 @@ public class StaxStreamProcessor implements AutoCloseable {
         }
     }
 
-    public String getAttribute(String email) {
-        return null;
+    public String getAttribute(String attr) {
+        reader.getAttributeValue(null, attr);
+        return  reader.getAttributeValue(null, attr);
     }
 }
