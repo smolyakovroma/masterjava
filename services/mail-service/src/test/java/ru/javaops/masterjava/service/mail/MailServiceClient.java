@@ -19,7 +19,7 @@ public class MailServiceClient {
                 new URL("http://localhost:8080/mail/mailService?wsdl"),
                 new QName("http://mail.service.masterjava.javaops.ru/", "MailServiceImplService"));
 
-        MailServiceImpl mailService = service.getPort(MailServiceImpl.class);
+        MailServiceExecutor mailService = service.getPort(MailServiceExecutor.class);
         mailService.sendMail(ImmutableList.of(new Addressee("gzd@bk.ru", null)), null, "Subject", "Body");
     }
 }
