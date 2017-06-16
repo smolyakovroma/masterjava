@@ -35,6 +35,18 @@ public class StaxStreamProcessor implements AutoCloseable {
         return false;
     }
 
+    public String doUntilAny(int startEvent, String value1, String value2) throws XMLStreamException {
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == startEvent) {
+                if (reader.getLocalName().equals(value1) || reader.getLocalName().equals(value2)) {
+                    return reader.getLocalName();
+                }
+            }
+        }
+        return null;
+    }
+
     public String getValue(int event) throws XMLStreamException {
         return (event == XMLEvent.CHARACTERS) ? reader.getText() : reader.getLocalName();
     }
@@ -62,4 +74,6 @@ public class StaxStreamProcessor implements AutoCloseable {
         reader.getAttributeValue(null, attr);
         return  reader.getAttributeValue(null, attr);
     }
+
+
 }
