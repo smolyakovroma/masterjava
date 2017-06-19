@@ -15,10 +15,21 @@ public class MailServiceClient {
 
     public static void main(String[] args) throws MalformedURLException {
         Service service = Service.create(
-                new URL( "http://localhost:8080/mail/mailService?wsdl"),
+                new URL("http://localhost:8080/mail/mailService?wsdl"),
                 new QName("http://mail.javaops.ru/", "MailServiceImplService"));
 
         MailService mailService = service.getPort(MailService.class);
-        mailService.sendToGroup(ImmutableSet.of(new Addressee("gzd@bk.ru", null)), null, "Subject", "Body");
+
+
+        ImmutableSet<Addressee> addressees = ImmutableSet.of(
+                new Addressee("gzd@bk.ru"),
+                new Addressee("Мастер Java <mr.iterator@jmail.ru>"),
+                new Addressee("Bad Email <bad_email.ru>"));
+
+        String status = mailService.sendToGroup(addressees, ImmutableSet.of(), "Bulk email subject", "Bulk email body");
+        System.out.println(status);
+
+        GroupResult groupResult = mailService.sendBulk(addressees, "Individual mail subject", "Individual mail body");
+        System.out.println(groupResult);
     }
 }
